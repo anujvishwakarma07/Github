@@ -2,10 +2,10 @@ const yargs = require('yargs');
 const { hideBin } = require('yargs/helpers');
 const { initRepo } = require('./controllers/init');
 const { addFile } = require('./controllers/add');
-const { pullCommit } = require('./controllers/pull');
-const { pushCode } = require('./controllers/push');
-const { revertCommit } = require('./controllers/revert');
 const { commitMessage } = require('./controllers/commit');
+const { pushCode } = require('./controllers/push');
+const { pullCommit } = require('./controllers/pull');
+const { revertCommit } = require('./controllers/revert');
 
 
 yargs(hideBin(process.argv)).
