@@ -42,6 +42,9 @@ The following commands represent the core API of our tool.
 ### 2. Staging & Committing
 - **`add <file>`**
   - **Purpose:** Stages a file, marking its current state to be included in the next commit.
+  - **Technical Implementation:**
+    - Checks for the `.myGit` tracking folder and creates a `staging` directory inside it.
+    - Uses Node.js native `fs.copyFile` to duplicate the specified file from the working directory into the `.myGit/staging` area.
 - **`commit <message>`**
   - **Purpose:** Snapshots all staged files and saves them permanently in the local history with a descriptive message.
 
@@ -89,6 +92,13 @@ node index.js commit "Initial project setup"
 - **Repository Initialization:** Implemented the core logic for the `init` command in `backend/controllers/init.js`.
 - **Directory Creation:** The command now successfully creates the hidden `.myGit` tracking folder and the `commits` subfolder (`.myGit/commits`).
 - **Configuration Setup:** Automatically generates a `config.json` file inside the repository to store environment credentials (like `S3_Bucket`, to be configured later).
+
+### Commit: Implement `add` Command Logic
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **Argument Passing:** Updated the CLI parser in `index.js` to correctly pass the positional `file` argument to the controller.
+- **Staging Area Creation:** Implemented the `addFile` function in `backend/controllers/add.js` to dynamically create the `.myGit/staging` folder if it doesn't exist.
+- **File Staging:** Added logic using `fs.copyFile` to duplicate the targeted file into the staging area so it is ready for the next commit snapshot.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*
