@@ -47,6 +47,12 @@ The following commands represent the core API of our tool.
     - Uses Node.js native `fs.copyFile` to duplicate the specified file from the working directory into the `.myGit/staging` area.
 - **`commit <message>`**
   - **Purpose:** Snapshots all staged files and saves them permanently in the local history with a descriptive message.
+  - **Technical Implementation:**
+    - Generates a unique `commitId` using the `uuid` package.
+    - Creates a new commit directory (`.mygit/commits/<commitId>`) to store the snapshot.
+    - Uses Node.js native `fs.readdir` to read all currently staged files in `.mygit/staging`.
+    - Iterates over the staged files and uses `fs.copyFile` to copy them into the new commit directory.
+    - Writes a `commit.json` file inside the commit directory using `fs.writeFile` to store metadata (the commit message and timestamp).
 
 ### 3. Remote Synchronization
 - **`push`**
@@ -99,6 +105,15 @@ node index.js commit "Initial project setup"
 - **Argument Passing:** Updated the CLI parser in `index.js` to correctly pass the positional `file` argument to the controller.
 - **Staging Area Creation:** Implemented the `addFile` function in `backend/controllers/add.js` to dynamically create the `.myGit/staging` folder if it doesn't exist.
 - **File Staging:** Added logic using `fs.copyFile` to duplicate the targeted file into the staging area so it is ready for the next commit snapshot.
+
+### Commit: Implement `commit` Command Logic
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **UUID Integration:** Integrated the `uuid` package to generate unique identifiers for each commit.
+- **Commit Directory Structure:** Programmed the system to dynamically create unique subdirectory targets (`.mygit/commits/<commitId>`).
+- **File Copying & Snapshotting:** Implemented file iteration over the staging directory using `fs.readdir` and used `fs.copyFile` to duplicate staged files into the commit snapshot directory.
+- **Metadata Storage:** Added logic to store commit metadata (user message and ISO timestamp) inside a `commit.json` file in the snapshot directory.
+- **Bug Fixes:** Resolved the unawaited `fs.readFile` and directory-read (`EISDIR`) errors in the commit controller, changing it to an awaited `fs.readdir` call.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*
