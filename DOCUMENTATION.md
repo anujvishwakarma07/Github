@@ -12,8 +12,8 @@ This project is designed to mimic the core behavior of Git, providing a local ve
 1. **User Input:** The user runs a command in the terminal (e.g., `node index.js add file.txt`).
 2. **CLI Parser (Yargs):** `index.js` acts as the entry point. Yargs intercepts the command, validates the arguments, and routes the request to the correct controller.
 3. **Controllers (Business Logic):** Each command has its own dedicated file inside the `backend/controllers/` folder. This modular approach keeps the code clean and easy to maintain.
-4. **Local Tracking:** (Future Feature) The system will hash files, track changes, and store commits locally inside a hidden folder (similar to `.git`).
-5. **Remote Sync:** (Future Feature) Using AWS SDK, the system will allow pushing local commits to an S3 bucket and pulling them down to other machines.
+4. **Local Tracking:** The system stores commit snapshot folders and metadata files inside a hidden `.mygit` tracking folder.
+5. **Remote Sync:** Using the AWS SDK, the system allows pushing local commits to an S3 bucket (with pulling functionality coming up next).
 
 ---
 
@@ -22,7 +22,7 @@ This project is designed to mimic the core behavior of Git, providing a local ve
 - **Node.js**: The backend runtime used to execute JavaScript outside the browser and interact with the file system.
 - **Yargs**: The CLI framework. 
   - *Why Yargs?* Standard Node.js gives us raw arguments in `process.argv` which are hard to parse. Yargs automatically formats these inputs, handles option flags (like `-m`), enforces required arguments, and generates an automatic `--help` guide for users.
-- **AWS SDK**: (Upcoming) Will be used to connect our local repositories to the cloud via S3.
+- **AWS SDK (v2)**: Used to connect our local repository to Amazon S3 to store commits in the cloud.
 
 ---
 
@@ -57,6 +57,14 @@ The following commands represent the core API of our tool.
 ### 3. Remote Synchronization
 - **`push`**
   - **Purpose:** Uploads all local commits to the remote AWS S3 storage.
+  - **Technical Implementation:**
+    - Imports client configuration from `backend/config/aws-config.js` containing Region and Bucket Name.
+    - Reads all commit directories located in `.mygit/commits/` using `fs.readdir`.
+    - For each commit directory:
+      - Reads all contained files (e.g., staging copies, `commit.json` metadata).
+      - Converts the file contents to buffers using `fs.readFile`.
+      - Uploads files asynchronously to the S3 bucket using the SDK's `s3.upload().promise()`.
+      - Structures the uploaded S3 keys as `commits/<commitId>/<filename>`.
 - **`pull`**
   - **Purpose:** Fetches the latest commits from AWS S3 and merges them into the local repository.
 
@@ -114,6 +122,15 @@ node index.js commit "Initial project setup"
 - **File Copying & Snapshotting:** Implemented file iteration over the staging directory using `fs.readdir` and used `fs.copyFile` to duplicate staged files into the commit snapshot directory.
 - **Metadata Storage:** Added logic to store commit metadata (user message and ISO timestamp) inside a `commit.json` file in the snapshot directory.
 - **Bug Fixes:** Resolved the unawaited `fs.readFile` and directory-read (`EISDIR`) errors in the commit controller, changing it to an awaited `fs.readdir` call.
+
+### Commit: Implement `push` Command Logic & AWS S3 Integration
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **AWS Configuration Setup:** Created `backend/config/aws-config.js` to manage AWS region configuration (`ap-south-1`) and configure the S3 client instance.
+- **Push Controller Implementation:** Built the core logic in `backend/controllers/push.js` to scan `.mygit/commits` and retrieve individual commit folders.
+- **Dynamic Key Uploads:** Programmed the system to iterate through files within each commit directory and upload them to the S3 bucket under keys matching the structure `commits/<commitId>/<filename>`.
+- **Debugging & Syntax Fixes:** Rectified an unawaited `fs.readdir()` call in the push controller that prevented execution, and removed debug logs.
+- **Credentials Guide:** Established local AWS authentication via the shared credentials file (`~/.aws/credentials`) to safely connect the local CLI application to AWS S3.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*
