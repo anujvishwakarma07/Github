@@ -1,6 +1,31 @@
-async function commitMessage(params) {
-    console.log('Commited Successfully');
+const fs = require('fs').promises;
+const path = require('path');
+const { v4: uuidv4 } = require('uuid');
+
+async function commitMessage(message) {
+    const repoPath = path.resolve(process.cwd(), ".mygit");
+    const stagingPath = path.join(repoPath, "staging");
+    const commitPath = path.join(repoPath, "commits");
+
+    try {
+        const commitId = uuidv4();
+        const commitDir = path.join(commitPath, commitId);
+        await fs.mkdir(commitDir, { recursive: true });
+
+        const files = await fs.readdir(stagingPath);
+        for (const file of files) {
+            await fs.copyFile(path.join(stagingPath, file), path.join(commitDir, file));
+        }
+
+        await fs.writeFile(path.join(commitDir, "commit.json"), JSON.stringify({ message, data: new Date().toISOString() }));
+
+        console.log(`Commit ${commitId} is created with message: ${message}`);
+
+    } catch (error) {
+        console.error('Error on commiting file: ', error);
+
+    }
 }
 
 
-module.exports = {commitMessage};   
+module.exports = { commitMessage };   

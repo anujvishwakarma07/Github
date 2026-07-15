@@ -29,6 +29,19 @@ yargs(hideBin(process.argv)).
         }
     )
     .command(
+        "commit <message>",
+        "Changes commited",
+        (yargs) => {
+            yargs.positional("message", {
+                describe: "Write the commit message",
+                type: "string",
+            })
+        },
+        (argv) => {
+            commitMessage(argv.message);
+        },
+    )
+    .command(
         "pull",
         "Pull commits from s3",
         {},
@@ -44,17 +57,6 @@ yargs(hideBin(process.argv)).
             })
         },
         revertCommit,
-    )
-    .command(
-        "commit <message>",
-        "Changes commited",
-        (yargs) => {
-            yargs.positional("message", {
-                describe: "Write the commit message",
-                type: "string",
-            })
-        },
-        commitMessage,
     )
     .command(
         "push",
