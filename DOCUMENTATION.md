@@ -15,6 +15,10 @@ This project is designed to mimic the core behavior of Git, providing a local ve
 4. **Local Tracking:** The system stores commit snapshot folders and metadata files inside a hidden `.mygit` tracking folder.
 5. **Remote Sync:** Using the AWS SDK, the system allows pushing local commits to an S3 bucket (with pulling functionality coming up next).
 6. **Server & MVC Layout:** A backend server can be run via the CLI. It follows an MVC pattern utilizing a `models/` directory for data schemas and a `middlewares/` directory for security filters.
+   * **Data Models:**
+     * **`User`**: Manages profile records, list of owned repositories, followed users, and starred repositories.
+     * **`Repository`**: Manages repository metadata including name, description, content string references, visibility toggle, owner, and issues reference.
+     * **`Issue`**: Defines issue tickets referencing their host repository with title, description, and status state (`open`/`close`).
 
 ---
 
@@ -177,6 +181,14 @@ node index.js commit "Initial project setup"
 - **Express Server Setup:** Initialized an Express application with JSON parsing (`body-parser`) and CORS config in `index.js`.
 - **Database Integration:** Configured asynchronous connection to MongoDB via Mongoose using environmental credentials (`MONGO_URI`).
 - **Real-Time WebSockets:** Integrated `Socket.io` attached to the HTTP server to support event-driven WebSocket connections and dynamic room routing.
+
+### Commit: Define Mongoose Schemas for Users, Repositories, and Issues
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **User Schema Setup:** Programmed the `User` model to structure profiles, star records, followed users, and repository ownership.
+- **Repository Schema Setup:** Built the `Repository` model containing metadata fields, visibility toggle, owner references, and issue trackers.
+- **Issue Schema Setup:** Created the `Issue` schema containing ticket details (title, description), status enumeration (`open`/`close`), and its parent repository relation.
+- **Syntax Correction:** Changed the `userModel.js` export statement from ESM `export default` to CommonJS `module.exports` for system compatibility.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*
