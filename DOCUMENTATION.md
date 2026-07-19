@@ -24,6 +24,9 @@ This project is designed to mimic the core behavior of Git, providing a local ve
 - **Yargs**: The CLI framework. 
   - *Why Yargs?* Standard Node.js gives us raw arguments in `process.argv` which are hard to parse. Yargs automatically formats these inputs, handles option flags (like `-m`), enforces required arguments, and generates an automatic `--help` guide for users.
 - **AWS SDK (v2)**: Used to connect our local repository to Amazon S3 to store commits in the cloud.
+- **Express**: Node.js web application framework used to build server API endpoints.
+- **Mongoose**: MongoDB object modeling tool used to manage data schemas.
+- **Socket.io**: WebSockets library enabling bi-directional, real-time client-server communication.
 
 ---
 
@@ -88,7 +91,10 @@ The following commands represent the core API of our tool.
   - **Purpose:** Starts the backend web server.
   - **Technical Implementation:**
     - Triggers the `startServer` entrypoint function in [index.js](file:///c:/Users/anuj7/Desktop/github/backend/index.js#L77-L79).
-    - Mapped via Yargs CLI command definition to allow simple server initialization (`node index.js start`).
+    - Boots an Express application configured with CORS (`origin: "*"`) and JSON body parsing.
+    - Connects to MongoDB via Mongoose using the `MONGO_URI` environment variable.
+    - Binds a `Socket.io` server to the HTTP instance to handle client connection and real-time room joining (`joinRoom`).
+    - Launches the server listener on the port specified by the `PORT` environment variable.
 
 ---
 
@@ -164,6 +170,13 @@ node index.js commit "Initial project setup"
 - **MVC Architecture Setup:** Structured folders for database models and security filters.
 - **Model Frameworks:** Created placeholder files for `userModel.js`, `repoModel.js`, and `issueModel.js`.
 - **Middleware Templates:** Created placeholder files for `authMiddleware.js` and `authorizeMiddleware.js` to guard incoming API requests.
+
+### Commit: Setup Express Server, Mongoose Database Connection, and Socket.io Real-time Communication
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **Express Server Setup:** Initialized an Express application with JSON parsing (`body-parser`) and CORS config in `index.js`.
+- **Database Integration:** Configured asynchronous connection to MongoDB via Mongoose using environmental credentials (`MONGO_URI`).
+- **Real-Time WebSockets:** Integrated `Socket.io` attached to the HTTP server to support event-driven WebSocket connections and dynamic room routing.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*
