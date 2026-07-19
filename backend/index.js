@@ -42,6 +42,12 @@ yargs(hideBin(process.argv)).
         },
     )
     .command(
+        "push",
+        "push to the s3",
+        {},
+        pushCode,
+    )
+    .command(
         "pull",
         "Pull commits from s3",
         {},
@@ -56,12 +62,9 @@ yargs(hideBin(process.argv)).
                 type: "string",
             })
         },
-        revertCommit,
-    )
-    .command(
-        "push",
-        "push to the s3",
-        {},
-        pushCode,
+        (argv) => {
+            revertCommit(argv.commitId);
+        }
     )
     .demandCommand(1, "You need at least one command").help().argv;
+
