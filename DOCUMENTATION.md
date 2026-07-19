@@ -67,10 +67,20 @@ The following commands represent the core API of our tool.
       - Structures the uploaded S3 keys as `commits/<commitId>/<filename>`.
 - **`pull`**
   - **Purpose:** Fetches the latest commits from AWS S3 and merges them into the local repository.
+  - **Technical Implementation:**
+    - Contacts S3 using `s3.listObjectsV2` for files with the prefix `commits/`.
+    - Parses S3 keys to reconstruct the commit folder structure under `.mygit/commits/`.
+    - Recursively creates local folders for each remote commit using `fs.mkdir`.
+    - Pulls down file buffers via `s3.getObject` and writes them into their corresponding local locations using `fs.writeFile`.
 
 ### 4. Version Restoration
 - **`revert <commitId>`**
   - **Purpose:** Rolls back the repository's files to match the state they were in at a specific `commitId`.
+  - **Technical Implementation:**
+    - Locates the specified commit folder `.mygit/commits/<commitId>`.
+    - Uses `fs.readdir` (promisified) to read all files captured in that commit's snapshot.
+    - Resolves the working directory path (`.mygit/..`).
+    - Loops through the files and overwrites/restores them to the working directory using `fs.copyFile` (promisified).
 
 ---
 
@@ -131,6 +141,13 @@ node index.js commit "Initial project setup"
 - **Dynamic Key Uploads:** Programmed the system to iterate through files within each commit directory and upload them to the S3 bucket under keys matching the structure `commits/<commitId>/<filename>`.
 - **Debugging & Syntax Fixes:** Rectified an unawaited `fs.readdir()` call in the push controller that prevented execution, and removed debug logs.
 - **Credentials Guide:** Established local AWS authentication via the shared credentials file (`~/.aws/credentials`) to safely connect the local CLI application to AWS S3.
+
+### Commit: Implement `pull` and `revert` Commands Logic
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **Remote Synchronization (Pull):** Implemented the `pullCommit` function in `backend/controllers/pull.js` to retrieve all commit objects from the AWS S3 bucket and recreate the commits locally.
+- **Rollback Mechanism (Revert):** Coded the `revertCommit` logic in `backend/controllers/revert.js` using promisified file system methods to overwrite current files in the root folder with a selected commit's snapshots.
+- **Integration & Parameter Fixes:** Updated the `revert` command handler inside `index.js` with an anonymous wrapper function `(argv) => { revertCommit(argv.commitId) }` to correctly extract the parsed string argument from Yargs' `argv` object.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*
