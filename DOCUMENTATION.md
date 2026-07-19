@@ -14,6 +14,7 @@ This project is designed to mimic the core behavior of Git, providing a local ve
 3. **Controllers (Business Logic):** Each command has its own dedicated file inside the `backend/controllers/` folder. This modular approach keeps the code clean and easy to maintain.
 4. **Local Tracking:** The system stores commit snapshot folders and metadata files inside a hidden `.mygit` tracking folder.
 5. **Remote Sync:** Using the AWS SDK, the system allows pushing local commits to an S3 bucket (with pulling functionality coming up next).
+6. **Server & MVC Layout:** A backend server can be run via the CLI. It follows an MVC pattern utilizing a `models/` directory for data schemas and a `middlewares/` directory for security filters.
 
 ---
 
@@ -82,6 +83,13 @@ The following commands represent the core API of our tool.
     - Resolves the working directory path (`.mygit/..`).
     - Loops through the files and overwrites/restores them to the working directory using `fs.copyFile` (promisified).
 
+### 5. Server Management
+- **`start`**
+  - **Purpose:** Starts the backend web server.
+  - **Technical Implementation:**
+    - Triggers the `startServer` entrypoint function in [index.js](file:///c:/Users/anuj7/Desktop/github/backend/index.js#L77-L79).
+    - Mapped via Yargs CLI command definition to allow simple server initialization (`node index.js start`).
+
 ---
 
 ## 💻 Developer Guide
@@ -148,6 +156,14 @@ node index.js commit "Initial project setup"
 - **Remote Synchronization (Pull):** Implemented the `pullCommit` function in `backend/controllers/pull.js` to retrieve all commit objects from the AWS S3 bucket and recreate the commits locally.
 - **Rollback Mechanism (Revert):** Coded the `revertCommit` logic in `backend/controllers/revert.js` using promisified file system methods to overwrite current files in the root folder with a selected commit's snapshots.
 - **Integration & Parameter Fixes:** Updated the `revert` command handler inside `index.js` with an anonymous wrapper function `(argv) => { revertCommit(argv.commitId) }` to correctly extract the parsed string argument from Yargs' `argv` object.
+
+### Commit: Initialize Server Startup & MVC Directory Structure
+**Status:** ✅ Completed
+**Details of work completed in this phase:**
+- **Server Startup Command:** Integrated the `start` command in [index.js](file:///c:/Users/anuj7/Desktop/github/backend/index.js) mapped to `startServer()` for launching the backend application.
+- **MVC Architecture Setup:** Structured folders for database models and security filters.
+- **Model Frameworks:** Created placeholder files for `userModel.js`, `repoModel.js`, and `issueModel.js`.
+- **Middleware Templates:** Created placeholder files for `authMiddleware.js` and `authorizeMiddleware.js` to guard incoming API requests.
 
 ---
 *Note: This documentation serves as a living document and will be updated with each new commit as the underlying logic for file hashing, tree creation, and S3 integration is implemented.*

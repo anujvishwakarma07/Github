@@ -8,8 +8,14 @@ const { pullCommit } = require('./controllers/pull');
 const { revertCommit } = require('./controllers/revert');
 
 
-yargs(hideBin(process.argv)).
-    command(
+yargs(hideBin(process.argv))
+    .command(
+        "start",
+        "Starting the server",
+        {},
+        startServer
+    )
+    .command(
         "init",
         "Initialized the new repository",
         {},
@@ -67,4 +73,8 @@ yargs(hideBin(process.argv)).
         }
     )
     .demandCommand(1, "You need at least one command").help().argv;
+
+function startServer() {
+    console.log('Server logic called!');
+}
 
